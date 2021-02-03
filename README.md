@@ -1,1 +1,1 @@
-Bootstrap Paradox
+#[ModKit Wiki](../../wiki)
