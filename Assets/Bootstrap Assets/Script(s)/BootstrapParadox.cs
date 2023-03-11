@@ -143,7 +143,7 @@ public class BootstrapParadox : MonoBehaviour {
         else
         {
             receivedTime = Rnd.Range(181, startingTime + 1) - 30;
-            //receivedTime = 595; //Uncomment to test in TestHarness easier
+            //receivedTime = 560; //Uncomment to test in TestHarness easier
             Debug.LogFormat("[The Bootstrap Paradox #{0}] The received time of the message will be {1}:{2}.", _moduleId, (receivedTime / 60).ToString("000"), (receivedTime % 60).ToString("00"));
         }
 
