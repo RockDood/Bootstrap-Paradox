@@ -6,7 +6,8 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using Rnd = UnityEngine.Random;
 
-public class BootstrapParadox : MonoBehaviour {
+public class BootstrapParadox : MonoBehaviour
+{
 
     //Variables
 
@@ -61,7 +62,7 @@ public class BootstrapParadox : MonoBehaviour {
     //Used to tell whether the module has activated yet.
     private bool activated;
 
-    //Used to determine if the bomb's starting time was less than or equal to 3 minutes
+    //Used to determine if the bomb's starting time was less than or: 3 minutes
     private bool noDelay;
 
     //Used to determine if the message coroutine is currently active.
@@ -94,13 +95,16 @@ public class BootstrapParadox : MonoBehaviour {
     //Contains the encrypted destination timeline.
     private string newMessage;
 
+    //Used for quickly enabling additional logging
+    private bool testing = false;
+
     //Module ID stuff
     static int _moduleIdCounter = 1;
     int _moduleId;
 
     //Methods Begin Here
 
-    void Awake ()
+    void Awake()
     {
         //Just Module ID Stuff
         _moduleId = _moduleIdCounter++;
@@ -136,9 +140,8 @@ public class BootstrapParadox : MonoBehaviour {
         int startingTime = (int)BombInfo.GetTime();
         if (startingTime <= 180)
         {
-            noDelay = true;
             receivedTime = startingTime;
-            Debug.LogFormat("[The Bootstrap Paradox #{0}] Bomb starting time is less than 3 minutes, the received time will be the starting time ({1}:{2}).", _moduleId, (receivedTime / 60).ToString("000"), (receivedTime % 60).ToString("00"));
+            Debug.LogFormat("[The Bootstrap Paradox #{0}] Bomb starting time is less than 3 minutes, the received time will be the starting time: ({1}:{2}).", _moduleId, (receivedTime / 60).ToString("000"), (receivedTime % 60).ToString("00"));
         }
         else
         {
@@ -154,7 +157,8 @@ public class BootstrapParadox : MonoBehaviour {
     void CalculateStuff(bool log)
     {
         //Log received time in seconds
-        Debug.LogFormat("[The Bootstrap Paradox #{0}] The received time in seconds is {1}.", _moduleId, receivedTime);
+        if (testing)
+            Debug.LogFormat("[The Bootstrap Paradox #{0}] The received time in seconds is {1}.", _moduleId, receivedTime);
 
         //Generate the message
         usedTimeline = Rnd.Range(0, Timelines[0].Length);
@@ -164,10 +168,12 @@ public class BootstrapParadox : MonoBehaviour {
         float time = receivedTime;
         time /= 8;
         time = (int)time;
-        Debug.LogFormat("<The Bootstrap Paradox #{0}> R after divide by 8 is {1}.", _moduleId, time);
+        if (testing)
+            Debug.LogFormat("<The Bootstrap Paradox #{0}> R after divide by 8 is {1}.", _moduleId, time);
         time *= 5;
         time = (int)time;
-        Debug.LogFormat("<The Bootstrap Paradox #{0}> R after multiplying by 5 is {1}.", _moduleId, time);
+        if (testing)
+            Debug.LogFormat("<The Bootstrap Paradox #{0}> R after multiplying by 5 is {1}.", _moduleId, time);
         switch (usedTimeline)
         {
             case 0:
@@ -178,19 +184,22 @@ public class BootstrapParadox : MonoBehaviour {
                 {
                     time /= 5;
                     time = (int)time;
-                    Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 1 applies, which makes R equal to {1}.", _moduleId, time);
+                    if (testing)
+                        Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 1 applies, which makes R: {1}", _moduleId, time);
                 }
                 if (time % 2 == 0)
                 {
                     time *= 3;
                     time = (int)time;
-                    Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 2 applies, which makes R equal to {1}.", _moduleId, time);
+                    if (testing)
+                        Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 2 applies, which makes R: {1}", _moduleId, time);
                 }
                 if (IsPrime(DigitalRoot((int)time)))
                 {
                     time /= 2;
                     time = (int)time;
-                    Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 3 applies, which makes R equal to {1}.", _moduleId, time);
+                    if (testing)
+                        Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 3 applies, which makes R: {1}", _moduleId, time);
                 }
                 break;
             case 1:
@@ -202,19 +211,22 @@ public class BootstrapParadox : MonoBehaviour {
                 {
                     time /= 4;
                     time = (int)time;
-                    Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 1 applies, which makes R equal to {1}.", _moduleId, time);
+                    if (testing)
+                        Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 1 applies, which makes R: {1}", _moduleId, time);
                 }
                 if (time % 2 == 1)
                 {
                     time *= 3;
                     time = (int)time;
-                    Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 2 applies, which makes R equal to {1}.", _moduleId, time);
+                    if (testing)
+                        Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 2 applies, which makes R: {1}", _moduleId, time);
                 }
                 if (DigitalRoot((int)time) % 2 == 0)
                 {
                     time /= 2;
                     time = (int)time;
-                    Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 3 applies, which makes R equal to {1}.", _moduleId, time);
+                    if (testing)
+                        Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 3 applies, which makes R: {1}", _moduleId, time);
                 }
                 break;
             case 2:
@@ -230,7 +242,8 @@ public class BootstrapParadox : MonoBehaviour {
                     {
                         time /= 3;
                         time = (int)time;
-                        Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 1 applies, which makes R equal to {1}.", _moduleId, time);
+                        if (testing)
+                            Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 1 applies, which makes R: {1}", _moduleId, time);
                         break;
                     }
                     else
@@ -240,13 +253,15 @@ public class BootstrapParadox : MonoBehaviour {
                 {
                     time *= 2;
                     time = (int)time;
-                    Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 2 applies, which makes R equal to {1}.", _moduleId, time);
+                    if (testing)
+                        Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 2 applies, which makes R: {1}", _moduleId, time);
                 }
                 if (time.ToString().Contains("3"))
                 {
                     time /= 3;
                     time = (int)time;
-                    Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 3 applies, which makes R equal to {1}.", _moduleId, time);
+                    if (testing)
+                        Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 3 applies, which makes R: {1}", _moduleId, time);
                 }
                 break;
             case 3:
@@ -257,24 +272,28 @@ public class BootstrapParadox : MonoBehaviour {
                 {
                     time /= 2;
                     time = (int)time;
-                    Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 1 applies, which makes R equal to {1}.", _moduleId, time);
+                    if (testing)
+                        Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 1 applies, which makes R: {1}", _moduleId, time);
                 }
                 if (time.ToString().Contains("6"))
                 {
                     time /= 3;
                     time = (int)time;
-                    Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 2 applies, which makes R equal to {1}.", _moduleId, time);
+                    if (testing)
+                        Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 2 applies, which makes R: {1}", _moduleId, time);
                 }
                 if (time.ToString().Contains("8"))
                 {
                     time *= 4;
                     time = (int)time;
-                    Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 3 applies, which makes R equal to {1}.", _moduleId, time);
+                    if (testing)
+                        Debug.LogFormat("<The Bootstrap Paradox #{0}> Appendix rule 3 applies, which makes R: {1}", _moduleId, time);
                 }
                 break;
         }
         submitTime = (int)time % (receivedTime - 90);
-        Debug.LogFormat("<The Bootstrap Paradox #{0}> R at the end of modifications is {1}.", _moduleId, submitTime);
+        if (testing)
+            Debug.LogFormat("<The Bootstrap Paradox #{0}> R at the end of modifications is {1}.", _moduleId, submitTime);
 
         //Encrypt the destination timeline
         newMessage = Rot13Cipher(Timelines[1][usedTimeline]);
@@ -282,9 +301,8 @@ public class BootstrapParadox : MonoBehaviour {
         if (log)
         {
             Debug.LogFormat("[The Bootstrap Paradox #{0}] A new message has been received at {2}:{3}, it is {1}.", _moduleId, message, (receivedTime / 60).ToString("000"), (receivedTime % 60).ToString("00"));
-            Debug.LogFormat("[The Bootstrap Paradox #{0}] You timeline according to the decrypted message is {1}, which makes the destination timeline {2}.", _moduleId, Timelines[0][usedTimeline], Timelines[1][usedTimeline]);
-            Debug.LogFormat("[The Bootstrap Paradox #{0}] The dials must be set to {1}:{2}.", _moduleId, (submitTime / 60).ToString("000"), (submitTime % 60).ToString("00"));
-            Debug.LogFormat("[The Bootstrap Paradox #{0}] The encrypted message can be transmitted at any time.", _moduleId);
+            //Debug.LogFormat("[The Bootstrap Paradox #{0}] You timeline according to the decrypted message is {1}, which makes the destination timeline {2}.", _moduleId, Timelines[0][usedTimeline], Timelines[1][usedTimeline]);
+            //Debug.LogFormat("[The Bootstrap Paradox #{0}] The dials must be set to {1}:{2}.", _moduleId, (submitTime / 60).ToString("000"), (submitTime % 60).ToString("00"));
             Debug.LogFormat("[The Bootstrap Paradox #{0}] The encrypted message to transmit is {1}.", _moduleId, newMessage);
         }
     }
@@ -300,17 +318,11 @@ public class BootstrapParadox : MonoBehaviour {
         if (bombTime == receivedTime && !messageShown && activated)
         {
             messageShown = true;
-            StartCoroutine(DisplayMode(30f));
+            StartCoroutine(DisplayMode(15f));
             Debug.LogFormat("[The Bootstrap Paradox #{0}] The message has been received, it is {1}.", _moduleId, message);
-            Debug.LogFormat("[The Bootstrap Paradox #{0}] You timeline according to the decrypted message is {1}, which makes the destination timeline {2}.", _moduleId, Timelines[0][usedTimeline], Timelines[1][usedTimeline]);
-            if (!noDelay)
-                Debug.LogFormat("[The Bootstrap Paradox #{0}] The dials must be set to and the time to submit the encrypted message at is {1}:{2}.", _moduleId, (submitTime / 60).ToString("000"), (submitTime % 60).ToString("00"));
-            else
-            {
-                Debug.LogFormat("[The Bootstrap Paradox #{0}] The dials must be set to {1}:{2}.", _moduleId, (submitTime / 60).ToString("000"), (submitTime % 60).ToString("00"));
-                Debug.LogFormat("[The Bootstrap Paradox #{0}] The encrypted message can be transmitted at any time.", _moduleId);
-            }
-            Debug.LogFormat("[The Bootstrap Paradox #{0}] The encrypted message to transmit is {1}.", _moduleId, newMessage);
+            //Debug.LogFormat("[The Bootstrap Paradox #{0}] You timeline according to the decrypted message is {1}, which makes the destination timeline {2}.", _moduleId, Timelines[0][usedTimeline], Timelines[1][usedTimeline]);
+            //Debug.LogFormat("[The Bootstrap Paradox #{0}] The dials must be set to {1}:{2}.", _moduleId, (submitTime / 60).ToString("000"), (submitTime % 60).ToString("00"));
+            //Debug.LogFormat("[The Bootstrap Paradox #{0}] The encrypted message to transmit is {1}.", _moduleId, newMessage);
             return;
         }
         if ((bombTime == (receivedTime + 30) || bombTime == (receivedTime + 10) || bombTime == (receivedTime + 3) || bombTime == (receivedTime + 2) || bombTime == (receivedTime + 1)) && storedTime != bombTime && activated)
@@ -406,7 +418,7 @@ public class BootstrapParadox : MonoBehaviour {
             currentTime += Time.deltaTime;
             DialModels[dial].localRotation = Quaternion.Slerp(originalRotation, Quaternion.Euler((direction + 30) * currentTime / duration - 30, -180, 90), currentTime / duration);
         }
-        
+
         DialModels[dial].localEulerAngles = new Vector3(0, -180, 90);
         UpdateDials(dial);
     }
@@ -460,7 +472,7 @@ public class BootstrapParadox : MonoBehaviour {
             //Bottom Hidden
             dialToTurn[4].text = Numbers[(DialDigits[dial] + 2) % 6].ToString();
         }
-            rotating = false;
+        rotating = false;
     }
 
     //Cycles Input Display, Nothing special, No animation was need imo.
@@ -506,14 +518,15 @@ public class BootstrapParadox : MonoBehaviour {
         Transmit.AddInteractionPunch(_interactionPunchIntensity);
         Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Transmit.transform);
         int bombTime = (int)BombInfo.GetTime();
-        Debug.LogFormat("[The Bootstrap Paradox #{0}] Transmitted {1} when the bomb time was {2}:{3} and the dials read {4}.", _moduleId, DisplayText.text.Length == 0 ? "nothing" : DisplayText.text, (bombTime / 60).ToString("000"), (bombTime % 60).ToString("00"), DialDigits.Join("").Reverse().Join("").Insert(3, ":"));
-        if (DisplayText.text != newMessage || (bombTime != submitTime && !noDelay) || ((submitTime / 60).ToString("000") + ":" + (submitTime % 60).ToString("00")) != DialDigits.Join("").Reverse().Join("").Insert(3, ":"))
+        Debug.LogFormat("[The Bootstrap Paradox #{0}] Transmitted {1} at {2}:{3}. The dials read {4}.", _moduleId, DisplayText.text.Length == 0 ? "nothing" : DisplayText.text, (bombTime / 60).ToString("000"), (bombTime % 60).ToString("00"), DialDigits.Join("").Reverse().Join("").Insert(3, ":"));
+        if (DisplayText.text != newMessage || /*(bombTime != submitTime && !noDelay) || */((submitTime / 60).ToString("000") + ":" + (submitTime % 60).ToString("00")) != DialDigits.Join("").Reverse().Join("").Insert(3, ":"))
         {
             strikeHappened = true;
-            Debug.LogFormat("[The Bootstrap Paradox #{0}] Transmission rejected, strike! Sending a new message...", _moduleId);
+            Debug.LogFormat("[The Bootstrap Paradox #{0}] The dials must be set to {1}:{2}.", _moduleId, (submitTime / 60).ToString("000"), (submitTime % 60).ToString("00"));
+            Debug.LogFormat("[The Bootstrap Paradox #{0}] Transmission rejected, strike! Recieving new message...", _moduleId);
             Module.HandleStrike();
-            //Generate a new solution and prep to exclude time based check
-            noDelay = true;
+
+            //Generate a new solution
             receivedTime = bombTime;
             CalculateStuff(true);
             DisplayText.color = Color.black;
@@ -580,7 +593,7 @@ public class BootstrapParadox : MonoBehaviour {
         DisplayText.color = target;
     }
 
-    //Handles glitching the text for a few seconds during the 30 second period.
+    //Handles glitching the text for a few seconds prior to the 15 second period.
     IEnumerator GlitchWarp()
     {
         string text;
@@ -612,15 +625,25 @@ public class BootstrapParadox : MonoBehaviour {
             DisplayText.text = text;
             t += Time.deltaTime;
         }
+        string formattedTime = "00000";
+        for (int i = 4; i >= 0; i--)
+        {
+            while (DialDigits[4 - i] != int.Parse(formattedTime[i].ToString()))
+            {
+                DialIncrementer(4 - i, false);
+                while (rotating) yield return null;
+            }
+        }
         DisplayText.text = "";
+
     }
 
     //Twitch Plays Support
 
     //The help message that contains how to use all commands.
-    #pragma warning disable 414
+#pragma warning disable 414
     private readonly string TwitchHelpMessage = @"!{0} enter <l1> (l2)... [Selects the specified letter and then presses the enter button (optionally include multiple letters)] | !{0} dials <#####> [Sets the dials to the specified digits] | !{0} transmit (##:##) [Presses the transmit button (optionally when the bomb timer is '##:##')]";
-    #pragma warning restore 414
+#pragma warning restore 414
 
     //Handles the commands sent to the bot.
     IEnumerator ProcessTwitchCommand(string command)
@@ -818,8 +841,8 @@ public class BootstrapParadox : MonoBehaviour {
                 DialMod[4 - i].OnInteract();
             }
         }
-        if (!noDelay)
-            while ((int)BombInfo.GetTime() != submitTime) yield return true;
+        /*if (!noDelay)
+            while ((int)BombInfo.GetTime() != submitTime) yield return true;*/
         Transmit.OnInteract();
     }
 }

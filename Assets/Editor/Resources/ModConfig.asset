@@ -23,6 +23,6 @@ MonoBehaviour:
 
 
     In cooperation with Short Circuit and Exish. '
-  version: 
+  version: 1
   outputFolder: build
   previewImage: {fileID: 2800000, guid: f846751c4a2554543bbf18b7ea548e99, type: 3}
