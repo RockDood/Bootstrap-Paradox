@@ -169,7 +169,7 @@ public class BootstrapParadox : MonoBehaviour
         DisplayText.color = Color.black;
 
         //Calculate message receive time
-        int startingTime = (int) BombInfo.GetTime();
+        int startingTime = (int)BombInfo.GetTime();
         if (startingTime <= 180)
         {
             receivedTime = startingTime;
@@ -178,7 +178,7 @@ public class BootstrapParadox : MonoBehaviour
         else
         {
             receivedTime = Rnd.Range(startingTime / 10 * 6, startingTime / 10 * 9);
-            receivedTime = 1620; //Uncomment to test in TestHarness easier
+            receivedTime = startingTime - 3; //Uncomment to test in TestHarness easier
             Debug.LogFormat("[The Bootstrap Paradox #{0}] Message due for reception at {1}:{2}.", _moduleId, (receivedTime / 60).ToString("000"), (receivedTime % 60).ToString("00"));
         }
     }
@@ -192,11 +192,12 @@ public class BootstrapParadox : MonoBehaviour
 
         //Generate the message
         usedTimeline = Rnd.Range(0, Timelines[0].Length);
-        //usedTimeline = 1;
+        usedTimeline = 2;
         message = Rot13Cipher(Timelines[0][usedTimeline]);
 
         //Calculate submit time
         var time = receivedTime;
+        var timeline = Timelines[0][usedTimeline];
         time /= 8;
         if (testing)
             Debug.LogFormat("[The Bootstrap Paradox #{0}] R after divide by 8 is {1}.", _moduleId, time);
@@ -207,6 +208,7 @@ public class BootstrapParadox : MonoBehaviour
         if (challengeMode)
             Debug.LogFormat("[The Bootstrap Paradox #{0}] Standard rules have been applied.", _moduleId, time);
 
+
         switch (Timelines[0][usedTimeline])
         {
             case "Time":
@@ -214,7 +216,7 @@ public class BootstrapParadox : MonoBehaviour
             case "Card":
             case "Punk":
             case "Dude":
-                if (receivedTime.ToString().Contains("4"))
+                if (timeline != "Punk" || timeline != "Dude")
                 {
                     time /= 5;
                     if (testing)
@@ -247,8 +249,7 @@ public class BootstrapParadox : MonoBehaviour
             case "Cook":
             case "Hats":
             case "Boot":
-                string timeline = Timelines[1][usedTimeline].ToUpperInvariant();
-                if (timeline.Contains("H") || timeline.Contains("K") || timeline.Contains("E"))
+                if (receivedTime.ToString().Contains("4"))
                 {
                     time /= 4;
                     if (testing)
@@ -257,7 +258,7 @@ public class BootstrapParadox : MonoBehaviour
                     if (challengeMode)
                         Debug.LogFormat("[The Bootstrap Paradox #{0}] Appendix rule 1 applies", _moduleId);
                 }
-                if (receivedTime % 2 == 1)
+                if (DigitalRoot(receivedTime) % 2 == 0)
                 {
                     time *= 3;
                     if (testing)
@@ -266,7 +267,7 @@ public class BootstrapParadox : MonoBehaviour
                     if (challengeMode)
                         Debug.LogFormat("[The Bootstrap Paradox #{0}] Appendix rule 2 applies", _moduleId);
                 }
-                if (DigitalRoot(receivedTime) % 2 == 0)
+                if (receivedTime % 2 == 1)
                 {
                     time /= 2;
                     if (testing)
@@ -281,6 +282,11 @@ public class BootstrapParadox : MonoBehaviour
             case "Book":
             case "Pops":
             case "Play":
+                //string numStr = receivedTime.ToString();
+                //string reversedStr = new string(numStr.Reverse().ToArray());
+                //Debug.LogFormat("First string to evaluate: {0}. Second String to evaluate is {1}. {2}", numStr, reversedStr, numStr == reversedStr ? "The strings match." : "The strings do not match.");
+                //var VarIsPalindrome = numStr == reversedStr;
+
                 var timeStr = receivedTime.ToString();
                 if (timeStr.Distinct().Count() < timeStr.Length)
                 {
@@ -290,10 +296,9 @@ public class BootstrapParadox : MonoBehaviour
 
                     if (challengeMode)
                         Debug.LogFormat("[The Bootstrap Paradox #{0}] Appendix rule 1 applies", _moduleId);
-                    break;
                 }
 
-                if (receivedTime.ToString().Contains("7"))
+                if (IsPalindrome(receivedTime))
                 {
                     time *= 2;
                     if (testing)
@@ -318,7 +323,7 @@ public class BootstrapParadox : MonoBehaviour
             //Dead
             //Bomb
             default:
-                if (receivedTime % 2 == 1)
+                if (timeline == "Bang")
                 {
                     time /= 2;
                     if (testing)
@@ -327,7 +332,7 @@ public class BootstrapParadox : MonoBehaviour
                     if (challengeMode)
                         Debug.LogFormat("[The Bootstrap Paradox #{0}] Appendix rule 1 applies", _moduleId, time);
                 }
-                if (receivedTime.ToString().Contains("6"))
+                if (new[] {0, 1, 4, 6, 8, 9 }.Contains(DigitalRoot(receivedTime)))
                 {
                     time /= 3;
                     if (testing)
@@ -372,16 +377,12 @@ public class BootstrapParadox : MonoBehaviour
 
     void Update()
     {
-        int bombTime = (int) BombInfo.GetTime();
+        int bombTime = (int)BombInfo.GetTime();
         if (bombTime == receivedTime && !messageShown && activated)
         {
             CalculateStuff(true);
             messageShown = true;
             StartCoroutine(DisplayMode(15f));
-            //Debug.LogFormat("[The Bootstrap Paradox #{0}] A new message has been received at {2}:{3}, it is {1}.", _moduleId, message, (receivedTime / 60).ToString("000"), (receivedTime % 60).ToString("00"));
-            //Debug.LogFormat("[The Bootstrap Paradox #{0}] You timeline according to the decrypted message is {1}, which makes the destination timeline {2}.", _moduleId, Timelines[0][usedTimeline], Timelines[1][usedTimeline]);
-            //Debug.LogFormat("[The Bootstrap Paradox #{0}] The dials must be set to {1}:{2}.", _moduleId, (submitTime / 60).ToString("000"), (submitTime % 60).ToString("00"));
-            //Debug.LogFormat("[The Bootstrap Paradox #{0}] The encrypted message to transmit is {1}.", _moduleId, newMessage);
             return;
         }
         if ((bombTime == (receivedTime + 60) || bombTime == (receivedTime + 30) || bombTime == (receivedTime + 10) || bombTime == (receivedTime + 3) || bombTime == (receivedTime + 2) || bombTime == (receivedTime + 1)) && storedTime != bombTime && activated)
@@ -397,9 +398,18 @@ public class BootstrapParadox : MonoBehaviour
         string result = "";
         input = input.ToUpperInvariant();
         for (int i = 0; i < input.Length; i++)
-            result += (char) ('A' + (input[i] - 'A' + 13) % 26);
+            result += (char)('A' + (input[i] - 'A' + 13) % 26);
         return result;
     }
+
+    bool IsPalindrome(int num)
+    {
+        string numStr = num.ToString();
+        string reversedStr = new string(numStr.Reverse().ToArray());
+        //Debug.LogFormat("First string to evaluate: {0}. Second String to evaluate is {1}. {2}", numStr, reversedStr, numStr == reversedStr ? "The strings match." : "The strings do not match.");
+        return numStr == reversedStr;
+    }
+
 
     //Takes a number and returns the digital root
     int DigitalRoot(int number)
@@ -528,7 +538,7 @@ public class BootstrapParadox : MonoBehaviour
             LetterPosition = (LetterPosition + 1) % 26;
         else
             LetterPosition = (LetterPosition + 25) % 26;
-        InputText.text = ((char) ('A' + LetterPosition)).ToString();
+        InputText.text = ((char)('A' + LetterPosition)).ToString();
     }
 
     void EnterLetter()
@@ -544,7 +554,7 @@ public class BootstrapParadox : MonoBehaviour
         }
         if (DisplayText.text.Length > 3)
             DisplayText.text = DisplayText.text.Substring(DisplayText.text.Length - 3, 3);
-        DisplayText.text += ((char) ('A' + LetterPosition)).ToString();
+        DisplayText.text += ((char)('A' + LetterPosition)).ToString();
     }
 
     void TestSolve()
@@ -553,7 +563,7 @@ public class BootstrapParadox : MonoBehaviour
         Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, Transmit.transform);
         if (showingMessage || !messageShown || moduleSolved)
             return;
-        int bombTime = (int) BombInfo.GetTime();
+        int bombTime = (int)BombInfo.GetTime();
         Debug.LogFormat("[The Bootstrap Paradox #{0}] The dials read {1}.", _moduleId, DialDigits.Join("").Reverse().Join("").Insert(3, ":"));
         if (DisplayText.text != newMessage || /*(bombTime != submitTime && !noDelay) || */((submitTime / 60).ToString("000") + ":" + (submitTime % 60).ToString("00")) != DialDigits.Join("").Reverse().Join("").Insert(3, ":"))
         {
@@ -563,7 +573,7 @@ public class BootstrapParadox : MonoBehaviour
 
             if (challengeMode)
             {
-                Debug.LogFormat("[The Bootstrap Paradox #{0}] Hint: {1}", _moduleId, hints[(int) Math.Floor((double) Rnd.Range(0, hints.Length))]);
+                Debug.LogFormat("[The Bootstrap Paradox #{0}] Hint: {1}", _moduleId, hints[(int)Math.Floor((double)Rnd.Range(0, hints.Length))]);
             };
 
             //Generate a new solution
@@ -579,10 +589,11 @@ public class BootstrapParadox : MonoBehaviour
             Debug.LogFormat("[The Bootstrap Paradox #{0}] Transmission accepted, module solved.", _moduleId);
             if (challengeMode)
             {
-                Debug.LogFormat("[The Bootstrap Paradox #{0}] Hint: {1}", _moduleId, hints[(int) Math.Floor((double) Rnd.Range(0, hints.Length))]);
+                Debug.LogFormat("[The Bootstrap Paradox #{0}] Hint: {1}", _moduleId, hints[(int)Math.Floor((double)Rnd.Range(0, hints.Length))]);
             };
             Module.HandlePass();
             Audio.PlaySoundAtTransform("rewarp", transform);
+            InputText.text = "";
             StartCoroutine(RewarpText());
         }
     }
@@ -619,7 +630,7 @@ public class BootstrapParadox : MonoBehaviour
                 while (rotating) yield return null;
             }
         }
-        InputText.text = ((char) ('A' + LetterPosition)).ToString();
+        InputText.text = ((char)('A' + LetterPosition)).ToString();
         showingMessage = false;
     }
 
@@ -647,7 +658,7 @@ public class BootstrapParadox : MonoBehaviour
             yield return null;
             text = "";
             for (int i = 0; i < 4; i++)
-                text += (char) ('A' + Rnd.Range(0, 26));
+                text += (char)('A' + Rnd.Range(0, 26));
             DisplayText.text = text;
             t += Time.deltaTime;
         }
@@ -665,7 +676,7 @@ public class BootstrapParadox : MonoBehaviour
             yield return null;
             text = "";
             for (int i = 0; i < 4; i++)
-                text += (char) ('A' + Rnd.Range(0, 26));
+                text += (char)('A' + Rnd.Range(0, 26));
             DisplayText.text = text;
             t += Time.deltaTime;
         }
